@@ -1,4 +1,6 @@
-module uart_tx 
+module uart_tx
+# ( parameter SYSCLOCK = 27.0, // MHz
+    parameter BAUDRATE = 1.0 ) // Mbits
 ( input  logic       clk,
   input  logic       rst_n,  
   input  logic       send_trig,
@@ -7,22 +9,20 @@ module uart_tx
   output logic       tx_bsy
 );
 
-    // SYSCLOCK  = 27000000; // <Hz>
-    // BAUDRATE  = 1000000;
-    parameter CLKPERFRM = 9'd270; // ceil(SYSCLOCK/BAUDRATE*10)
+    localparam CLKPERFRM = int'(SYSCLOCK/BAUDRATE)*10;
     // bit order is lsb-msb
-    parameter TBITAT    = 9'd1;   // starT bit, round(SYSCLOCK/BAUDRATE*0)+1
-    parameter BIT0AT    = 9'd28;  // round(SYSCLOCK/BAUDRATE*1)+1
-    parameter BIT1AT    = 9'd55;  // round(SYSCLOCK/BAUDRATE*2)+1
-    parameter BIT2AT    = 9'd82;  // round(SYSCLOCK/BAUDRATE*3)+1
-    parameter BIT3AT    = 9'd109;  // round(SYSCLOCK/BAUDRATE*4)+1
-    parameter BIT4AT    = 9'd136; // round(SYSCLOCK/BAUDRATE*5)+1
-    parameter BIT5AT    = 9'd163; // round(SYSCLOCK/BAUDRATE*6)+1
-    parameter BIT6AT    = 9'd190; // round(SYSCLOCK/BAUDRATE*7)+1
-    parameter BIT7AT    = 9'd217; // round(SYSCLOCK/BAUDRATE*8)+1
-    parameter PBITAT    = 9'd244; // stoP bit, round(SYSCLOCK/BAUDRATE*9)+1
-    
-    logic [8:0] tx_cnt;    // tx flow control
+    localparam TBITAT    = 1; // START bit
+    localparam BIT0AT    = int'(SYSCLOCK/BAUDRATE*1)+1;
+    localparam BIT1AT    = int'(SYSCLOCK/BAUDRATE*2)+1;
+    localparam BIT2AT    = int'(SYSCLOCK/BAUDRATE*3)+1;
+    localparam BIT3AT    = int'(SYSCLOCK/BAUDRATE*4)+1;
+    localparam BIT4AT    = int'(SYSCLOCK/BAUDRATE*5)+1;
+    localparam BIT5AT    = int'(SYSCLOCK/BAUDRATE*6)+1;
+    localparam BIT6AT    = int'(SYSCLOCK/BAUDRATE*7)+1;
+    localparam BIT7AT    = int'(SYSCLOCK/BAUDRATE*8)+1;
+    localparam PBITAT    = int'(SYSCLOCK/BAUDRATE*9)+1; // STOP bit
+
+    logic [$clog2(int'(SYSCLOCK/BAUDRATE*10)+1)-1:0] tx_cnt;    // tx flow control
     logic [7:0] data2send; // buffer
     
     always@(posedge clk, negedge rst_n)
