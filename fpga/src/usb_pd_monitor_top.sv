@@ -27,7 +27,7 @@ synchronizer u_synchronizer_rst_n_sync
     .data_out (rst_n_sync) // output
    );
 
-assign cc_pin = cc1_pin | cc2_pin;
+assign cc_pin = cc1_pin | cc2_pin; // one cc_pin is pulled low, the other has signal
 
 synchronizer u_synchronizer_cc1_pin_sync
   ( .clk      (clk_27mhz),   // input
