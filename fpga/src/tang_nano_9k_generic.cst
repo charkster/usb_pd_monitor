@@ -46,10 +46,8 @@ IO_PORT "uart_tx"  IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 // TF Card, These are also pins
 // IO_LOC  "TF_SCLK"      36;
 // IO_PORT "TF_SCLK"      IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
-IO_LOC  "cc1_pin_buf"  36;
-IO_PORT "cc1_pin_buf"  IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
-IO_LOC  "cc2_pin_buf"  37;
-IO_PORT "cc2_pin_buf"  IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
+IO_LOC  "cc_pin_buf"  36;
+IO_PORT "cc_pin_buf"  IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 // IO_LOC  "TF_MOSI"      37;
 // IO_PORT "TF_MOSI"      IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 // IO_LOC  "TF_MISO"      39;
