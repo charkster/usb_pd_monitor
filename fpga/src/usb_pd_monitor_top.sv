@@ -67,13 +67,15 @@ usb_pd_decode u_usb_decode
     .char_ready                          // output
    );
 
-uart_tx u_uart_tx
-    ( .clk       (clk_27mhz),  // input
-      .rst_n     (rst_n_sync), // input
-      .send_trig (char_ready), // input
-      .send_data (char_out),   // input [7:0]
-      .tx        (uart_tx),    // output
-      .tx_bsy    ()            // output
-     );
+uart_tx 
+# ( .SYSCLOCK( 27.0 ), .BAUDRATE( 1.0 ) ) // MHz and Mbits
+u_uart_tx
+  ( .clk       (clk_27mhz),  // input
+    .rst_n     (rst_n_sync), // input
+    .send_trig (char_ready), // input
+    .send_data (char_out),   // input [7:0]
+    .tx        (uart_tx),    // output
+    .tx_bsy    ()            // output
+   );
 
 endmodule
