@@ -24,20 +24,25 @@ module uart_tx
 
     logic [$clog2(CLKPERFRM+1)-1:0] tx_cnt;    // tx flow control
     logic [7:0] data2send; // buffer
+    logic       frame_begin;
+    logic       frame_end;
+
+    assign frame_begin = send_trig & (~tx_bsy);
+    assign frame_end    = tx_bsy && (tx_cnt == CLKPERFRM);
     
     always@(posedge clk, negedge rst_n)
-      if      (~rst_n)                          tx_bsy <= 1'b0;
-      else if (send_trig & (~tx_bsy))           tx_bsy <= 1'b1;
-      else if (tx_bsy && (tx_cnt == CLKPERFRM)) tx_bsy <= 1'b0;
+      if      (~rst_n)      tx_bsy <= 1'b0;
+      else if (frame_begin) tx_bsy <= 1'b1;
+      else if (frame_end)   tx_bsy <= 1'b0;
  
     always@(posedge clk, negedge rst_n)
-      if      (~rst_n)                        tx_cnt <= 'd0;
-      else if (tx_bsy && (tx_cnt==CLKPERFRM)) tx_cnt <= 'd0;
-      else if (tx_bsy)                        tx_cnt <= tx_cnt + 1'b1;
+      if      (~rst_n)    tx_cnt <= 'd0;
+      else if (frame_end) tx_cnt <= 'd0;
+      else if (tx_bsy)    tx_cnt <= tx_cnt + 1'b1;
     
     always@(posedge clk, negedge rst_n)
-      if      (~rst_n)                 data2send <= 8'd0;
-      else if (send_trig && (~tx_bsy)) data2send <= send_data;
+      if      (~rst_n)      data2send <= 8'd0;
+      else if (frame_begin) data2send <= send_data;
     
     always@(posedge clk or negedge rst_n)
         if      (~rst_n)              tx <= 1'b1; // init val should be 1
