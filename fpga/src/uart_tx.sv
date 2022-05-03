@@ -22,7 +22,7 @@ module uart_tx
     localparam BIT7AT    = int'(SYSCLOCK/BAUDRATE*8)+1;
     localparam PBITAT    = int'(SYSCLOCK/BAUDRATE*9)+1; // STOP bit
 
-    logic [$clog2(int'(SYSCLOCK/BAUDRATE*10)+1)-1:0] tx_cnt;    // tx flow control
+    logic [$clog2(CLKPERFRM+1)-1:0] tx_cnt;    // tx flow control
     logic [7:0] data2send; // buffer
     
     always@(posedge clk, negedge rst_n)
