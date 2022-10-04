@@ -18,5 +18,6 @@ https://elabbay.myshopify.com/products/usb3-1-cm-cf-v1a-usb3-1-type-c-male-to-fe
 
 Here are some captures from Sigrok's Pulseview using my HiLetgo $12 logic analyzer:
 
+D0 is the buffered 3.3V version of the CC pin data. D1 is the 3.3V uart_tx_buf that the FPGA sends to the USB-to-UART bridge IC on the Tang Nano board. Pulseview is able to fully decode the 3.3V CC pin data. 
 ![picture](https://github.com/charkster/usb_pd_monitor/blob/main/images/usb_pd_get_source_cap1.png)
 ![picture](https://github.com/charkster/usb_pd_monitor/blob/main/images/usb_pd_good_crc.png)
