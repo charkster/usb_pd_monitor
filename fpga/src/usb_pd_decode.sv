@@ -1,3 +1,12 @@
+// 1 bit is a "UI" (Unit Interval), 3.02us < UI < 3.7us
+// Effectively this means...
+// A high bit has no transitions for over 2.5us, a low bit sees a transition in less than 2.5us
+// I define a timeout as not seeing an edge in at least 5us (Spec says 3.7us, but fpga pins are not accurate)
+// the only time you expect a timeout is at the end of the entire message... so ignore all my "timeout" terms
+// the preamble ends when the first SYNC-1 is detected... three lows then two highs (11000 shifting in from left-to-right)
+// 5 bits decode to one 4bit nibble, every time 5 bits is counted a nibble is born
+// I probably have some extra terms that are not needed... no harm, no foul
+
 module usb_pd_decode (
   input  logic       clk,
   input  logic       rst_n,
@@ -8,7 +17,6 @@ module usb_pd_decode (
 
 // clock of 24MHz used
 parameter CNT_2P5_US = 67;  // 2.5us / ( 1 / 27MHz )
-parameter CNT_3P0_US = 81;  // 3.0us / ( 1 / 27Mhz )
 parameter CNT_5P0_US = 135; // 5.0us / ( 1 / 27Mhz )
 
 logic [7:0] counter;
@@ -51,7 +59,6 @@ assign timeout_fedge = ~timeout && timeout_hold;
 
 assign bit_0 = (cc_pin_redge && (counter > CNT_2P5_US) && (!timeout)) || 
                (cc_pin_fedge && (counter > CNT_2P5_US) && (!timeout));
-//               (cc_pin_fedge && (counter > CNT_3P0_US) && (!timeout));
 
 assign bit_1 = (cc_pin_redge && (counter < CNT_2P5_US) && (!timeout));
 
