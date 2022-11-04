@@ -15,7 +15,7 @@ module usb_pd_decode (
   output logic       char_ready
 );
 
-// clock of 24MHz used
+// clock of 27MHz used
 parameter CNT_2P5_US = 67;  // 2.5us / ( 1 / 27MHz )
 parameter CNT_5P0_US = 135; // 5.0us / ( 1 / 27Mhz )
 
@@ -40,11 +40,13 @@ always_ff @(posedge clk, negedge rst_n)
 assign cc_pin_redge =   cc_pin  && (!cc_pin_hold);
 assign cc_pin_fedge = (!cc_pin) &&   cc_pin_hold;
 
+// this counter counts at the 27MHz rate, the count is the time interval between CC edges
 always_ff @(posedge clk, negedge rst_n)
   if (~rst_n)                                       counter <= 'd0;
   else if (cc_pin_redge || cc_pin_fedge || timeout) counter <= 'd0;
   else                                              counter <= counter + 1;
 
+// timeout occurs if we don't see an edge for 5us
 always_ff @(posedge clk, negedge rst_n)
   if (~rst_n)                            timeout <= 1'b0;
   else if (cc_pin_redge || cc_pin_fedge) timeout <= 1'b0;
@@ -54,7 +56,7 @@ always_ff @(posedge clk, negedge rst_n)
   if (~rst_n) timeout_hold <= 1'b0;
   else        timeout_hold <= timeout;
 
-// preamble detection
+// preamble detection, a falling edge of CC pin when timeout has previously been active
 assign timeout_fedge = ~timeout && timeout_hold;
 
 assign bit_0 = (cc_pin_redge && (counter > CNT_2P5_US) && (!timeout)) || 
