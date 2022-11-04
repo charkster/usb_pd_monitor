@@ -71,18 +71,22 @@ always_ff @(posedge clk, negedge rst_n)
   else if (timeout)    sync1_seen_hold <= 1'b0;
   else if (sync1_seen) sync1_seen_hold <= 1'b1;
 
+// sync1_seen term is needed for first detected sync1 as bit_count is not running, timeout_fedge for preamble detection
 assign char_ready = ((bit_0 || bit_1) && (bit_count == 'd4)) || (sync1_seen && !sync1_seen_hold) || timeout_fedge;
 
+// bit_count is not expected to be over 5, sync1_seen_hold will go low with a timeout and bit_count follows 1 clock cycle later
 always_ff @(posedge clk, negedge rst_n)
   if (~rst_n)                                bit_count <= 'd0;
   else if (char_ready || (!sync1_seen_hold)) bit_count <= 'd0;
   else if (bit_0 || bit_1)                   bit_count <= bit_count + 1;
 
+// bit buffer is used in both preamble and packet data
 always_ff @(posedge clk, negedge rst_n)
   if (~rst_n)              bit_buffer <= 4'b0000;
   else if (timeout)        bit_buffer <= 4'b0000;
   else if (bit_0 || bit_1) bit_buffer <= {bit_1,bit_buffer[3:1]};
 
+// the char_out is the ASCII hex character of the CC data
 always_comb
   case({bit_1,bit_buffer})
     5'b11110 : char_out = 8'h30; // 0
