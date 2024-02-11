@@ -84,7 +84,7 @@ always_ff @(posedge clk, negedge rst_n)
 always_ff @(posedge clk, negedge rst_n)
   if (~rst_n)              bit_buffer <= 4'b0000;
   else if (timeout)        bit_buffer <= 4'b0000;
-  else if (bit_0 || bit_1) bit_buffer <= {bit_1,bit_buffer[3:1]};
+  else if (bit_0 || bit_1) bit_buffer <= {bit_1,bit_buffer[3:1]}; // bit_1 is low when bit_0 is high
 
 // the char_out is the ASCII hex character of the CC data
 always_comb
